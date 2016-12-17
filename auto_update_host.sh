@@ -10,7 +10,7 @@
 hostsUrl=""
 localHostsUrl="/etc/hosts"
 screenName="getHosts7758521"
-hour=11
+hour=10
 
 # 替换hosts的函数
 function replaceHosts()
@@ -24,12 +24,45 @@ function replaceHosts()
 }
 
 
+
 # 获取hosts地址
-if [ $? -lt 1 ]; then
+if [ $# -lt 1 ]; then
   hostsUrl="https://raw.githubusercontent.com/racaljk/hosts/master/hosts"
 else
-  hostsUrl=$1
+  while [ $# -ge 1 ]; do
+    # echo $#
+    # echo $1
+    case $1 in
+      "-u")
+        hostsUrl=$2
+        shift;shift
+      ;;
+      "-h")
+        hour=$2
+        shift;shift
+      ;;
+      "-v")
+        echo "version 0.1.0"
+        exit 0
+      ;;
+      *)
+        echo "\n亲~ 参数不对~~\n"
+        echo "背景运行程序采用Screen的形式, 默认的Screen名字为${screenName}, 如果想停止运行的话"
+        echo "请执行 screen -r ${screenName}, 然后执行 exit\n"
+        echo "Options:\n"
+        echo "    -h                设置每天更新的时间(默认为早上10点)"
+        echo "    -u                设置更新的hosts文件的url(默认为github上面的)"
+        echo "    -v                查看版本号"
+        exit 0
+      ;;
+    esac
+  done
 fi
+
+# echo $hour
+# echo $hostsUrl
+# exit 0
+
 
 result=`screen -ls | awk '{print $1}'`
 
