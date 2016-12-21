@@ -7,7 +7,7 @@
 #
 
 # 默认地址
-hostsUrl=""
+hostsUrl="https://raw.githubusercontent.com/racaljk/hosts/master/hosts"
 localHostsUrl="/etc/hosts"
 screenName="getHosts7758521"
 hour=10
@@ -47,8 +47,9 @@ else
       ;;
       *)
         echo "\n亲~ 参数不对~~\n"
-        echo "背景运行程序采用Screen的形式, 默认的Screen名字为${screenName}, 如果想停止运行的话"
-        echo "请执行 screen -r ${screenName}, 然后执行 exit\n"
+        echo "* 请用 sudo 执行\n"
+        echo "* 背景运行程序采用Screen的形式, 默认的Screen名字为${screenName}, 如果想停止运行的话"
+        echo "请执行 sudo screen -r ${screenName}, 然后执行 exit\n"
         echo "Options:\n"
         echo "    -h                设置每天更新的时间(默认为早上10点)"
         echo "    -u                设置更新的hosts文件的url(默认为github上面的)"
@@ -63,25 +64,25 @@ fi
 # echo $hostsUrl
 # exit 0
 
+echo `screen -ls`;
 
 result=`screen -ls | awk '{print $1}'`
 
 echo "result: ${result}\n"
-# exit 0
 
 isContainer=`echo $result | grep $screenName`
 
 echo "isContainer: ${isContainer}\n"
 
 # 创建screen, 如果screen已经存在, 就继续运行否则创建
-if [ "$isContainer" != "" ]; then
+if [ "${isContainer}" != "" ]; then
   # 进入创建的screen
   # screen -r $screenName
   echo "进入名字为${screenName}的窗口..\n"
 
   # 每天早上10点获取文件内容
   while [ 1 ]; do
-    echo "如果到了${hour}点, 自动抓取hosts文件, 现在时间:\n--`date +\"%H:%M:%S\"`\n"
+    echo "如果到了${hour}点, 自动抓取hosts文件, \n 现在时间:\n--`date +\"%H:%M:%S\"`\n"
     if [ `date +%H` -eq $hour ]; then
       echo "更新 hosts..\n"
       if [ -e "$localHostsUrl" ]; then
@@ -103,6 +104,7 @@ if [ "$isContainer" != "" ]; then
   done
 else
   echo "创建名字为 ${screenName} 的screen窗口..\n"
+  exit 0
   screen -dmS $screenName
   screen -x $screenName -p 0 -X stuff "$0"
   screen -x $screenName -p 0 -X stuff $'\n'
